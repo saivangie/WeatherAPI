@@ -1,0 +1,11 @@
+[core]
+	bare = true
+	repositoryformatversion = 0
+	filemode = false
+	symlinks = false
+	ignorecase = true
+[remote "WeatherAPI"]
+	url = https://github.com/saivangie/WeatherAPI.git
+	fetch = +refs/heads/*:refs/remotes/WeatherAPI/*
+[credential]
+	helper = wincred

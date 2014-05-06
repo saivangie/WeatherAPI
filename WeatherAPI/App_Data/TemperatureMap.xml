@@ -1,0 +1,7 @@
+﻿<WeatherData>
+  <Forecast Priority="1">
+    <Temperature Min="10" Max="25" Message="Is your furnace serviced?"> </Temperature>
+    <Temperature Min="25" Max="90" Message="The water pipes can freeze. Did you inspect your pipes to avoiding freezing?"> </Temperature>
+  </Forecast>
+</WeatherData>
+
