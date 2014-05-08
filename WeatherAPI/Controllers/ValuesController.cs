@@ -8,6 +8,8 @@ using System.Web.Http;
 using ForecastIO;
 using System.Xml;
 using System.Xml.Linq;
+using Newtonsoft.Json;
+using System.Web.Mvc;
 
 namespace WeatherAPI.Controllers
 {
@@ -26,7 +28,7 @@ namespace WeatherAPI.Controllers
 		}
 
 		// GET api/values/5
-		public string Get([FromUri] Request req)
+		public String Get([FromUri] Request req)
 		{
 			if(req.latitude>0 && req.longitude>0)
 			{
@@ -44,7 +46,13 @@ namespace WeatherAPI.Controllers
 			var response = request.Get();
 			var temperature = response != null ? response.currently.apparentTemperature : 0.0f;
 			var message = getMessageForTemp(temperature);
-			return message;
+			Response resp = new Response()
+			{
+				Message = message,
+				Temperature = temperature
+			};
+			string json = JsonConvert.SerializeObject(resp);		
+			return json;
 		}
 
 		public string getMessageForTemp(double temperature)
@@ -86,6 +94,7 @@ namespace WeatherAPI.Controllers
 			return "not found";
 		}
 
+		
 		// POST api/values
 		public void Post([FromBody]string value)
 		{
