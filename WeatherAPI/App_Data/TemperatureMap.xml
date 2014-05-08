@@ -3,5 +3,10 @@
     <Temperature Min="10" Max="25" Message="Is your furnace serviced?"> </Temperature>
     <Temperature Min="25" Max="90" Message="The water pipes can freeze. Did you inspect your pipes to avoiding freezing?"> </Temperature>
   </Forecast>
+  <MonthlyForecast>
+    <Jan Message ="It's Winter.Did you inspect your heater?"></Jan>
+    <May Message="Summer Time!! yaay!!"></May>
+    <Jun Message="June!!"></Jun>
+  </MonthlyForecast>
 </WeatherData>
 

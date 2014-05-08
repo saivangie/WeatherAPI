@@ -24,6 +24,7 @@ namespace WeatherAPI.Controllers
 		public class Response {
 			public double Temperature { get; set; }
 			public List<String> Services { get; set; }
+			public string MonthlyMessage { get; set; }
 			public string Message { get; set; }
 		}
 
@@ -49,7 +50,8 @@ namespace WeatherAPI.Controllers
 			Response resp = new Response()
 			{
 				Message = message,
-				Temperature = temperature
+				Temperature = temperature,
+				MonthlyMessage = getMonthlyMessage()
 			};
 			string json = JsonConvert.SerializeObject(resp);		
 			return json;
@@ -86,6 +88,29 @@ namespace WeatherAPI.Controllers
 										}
 									}
 								}
+							}
+						}
+					}
+				}
+			}
+			return "not found";
+		}
+
+		public string getMonthlyMessage()
+		{
+			using (XmlReader reader = XmlReader.Create(HttpContext.Current.Server.MapPath("~/App_Data/TemperatureMap.xml")))
+			{
+				while (reader.Read())
+				{
+					if (reader.NodeType == XmlNodeType.Element && reader.Name == "MonthlyForecast")
+					{
+						XmlReader forecastReader = reader.ReadSubtree();
+
+						while (forecastReader.Read())
+						{
+							if (forecastReader.NodeType == XmlNodeType.Element && forecastReader.Name == DateTime.Now.ToString("MMM"))
+							{
+								return forecastReader.GetAttribute("Message").ToString();
 							}
 						}
 					}
