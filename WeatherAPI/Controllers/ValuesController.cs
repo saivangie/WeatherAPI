@@ -22,10 +22,18 @@ namespace WeatherAPI.Controllers
 		}
 
 		public class Response {
+
 			public double Temperature { get; set; }
-			public List<String> Services { get; set; }
-			public string MonthlyMessage { get; set; }
+			public string Services { get; set; }
 			public string Message { get; set; }
+
+			public string MonthlyMessage { get; set; }
+			
+			public double PastTemperature { get; set; }
+			public string PastMessage { get; set; }
+
+			public double ForecastTemperature { get; set; }
+			public string Forecast { get; set; }
 		}
 
 		// GET api/values/5
@@ -46,18 +54,30 @@ namespace WeatherAPI.Controllers
 			var request = new ForecastIORequest("abc4fd99d05a34abc8583612b44de521", latitude, longitude, Unit.si);
 			var response = request.Get();
 			var temperature = response != null ? response.currently.apparentTemperature : 0.0f;
+
+			//Forecaset call to get past week's temperature
+			var request1 = new ForecastIORequest("abc4fd99d05a34abc8583612b44de521", latitude, longitude, DateTime.Today.Subtract(TimeSpan.FromDays(7)), Unit.si);
+			var response1 = request1.Get();
+			var temperature1 = response1 !=null ? response1.currently.apparentTemperature : 0.0f;
+
+			
 			var message = getMessageForTemp(temperature);
 			Response resp = new Response()
 			{
-				Message = message,
 				Temperature = temperature,
-				MonthlyMessage = getMonthlyMessage()
+				Services = message[1],
+				Message = message[0],
+				MonthlyMessage = getMonthlyMessage(),
+				PastTemperature = temperature1, 
+				PastMessage = getMessageForTemp(temperature1)[0],
+				Forecast = response.daily.summary,
+				ForecastTemperature = response.daily.data[7].apparentTemperatureMax
 			};
 			string json = JsonConvert.SerializeObject(resp);		
 			return json;
 		}
 
-		public string getMessageForTemp(double temperature)
+		public string[] getMessageForTemp(double temperature)
 		{
 			using (XmlReader reader = XmlReader.Create(HttpContext.Current.Server.MapPath("~/App_Data/TemperatureMap.xml")))
 			{
@@ -83,7 +103,10 @@ namespace WeatherAPI.Controllers
 											int max = Convert.ToInt32(tempReader.GetAttribute("Max").ToString());
 											if (temperature < max)
 											{
-												return tempReader.GetAttribute("Message").ToString();
+												string[] returnvalue = new string[2];
+												returnvalue[0] = tempReader.GetAttribute("Message").ToString();
+												returnvalue[1] = tempReader.GetAttribute("Services").ToString();
+												return returnvalue;
 											}
 										}
 									}
@@ -93,7 +116,7 @@ namespace WeatherAPI.Controllers
 					}
 				}
 			}
-			return "not found";
+			return null;
 		}
 
 		public string getMonthlyMessage()
